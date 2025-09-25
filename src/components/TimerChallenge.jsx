@@ -2,24 +2,27 @@ import { useState, useRef } from 'react';
 import ResultModal from './ResultModal';
 
 export default function TimerChallenge({ title, targetTime }) {
-  const [timerIsStarted, setTimerIsStarted] = useState(false);
-  const [timerExpired, setTimerExpired] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
+  const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
   const timer = useRef();
   const dialog = useRef();
 
-  function handleStart() {
-    timer.current = setTimeout(() => {
-      setTimerExpired(true);
-      setTimerIsStarted(false);
-      dialog.current.open();
-    }, targetTime * 1000);
+  if (timeRemaining <= 0) {
+    clearInterval(timer.current);
+    setTimeRemaining(targetTime * 1000);
+    dialog.current.open();
+  }
 
-    setTimerIsStarted(true);
+  function handleStart() {
+    timer.current = setInterval(() => {
+      setTimeRemaining(prevTime => prevTime - 10);
+    }, 10);
   }
 
   function handleStop() {
-    clearTimeout(timer.current);
-    setTimerIsStarted(false);
+    clearInterval(timer.current);
+    setTimeRemaining(targetTime * 1000);
+    dialog.current.open();
   }
 
   return (
@@ -31,12 +34,12 @@ export default function TimerChallenge({ title, targetTime }) {
           {targetTime} second{targetTime > 1 ? 's' : ''}
         </p>
         <p>
-          <button onClick={timerIsStarted ? handleStop : handleStart}>
-            {timerIsStarted ? 'Stop' : 'Start'} challenge
+          <button onClick={timerIsActive ? handleStop : handleStart}>
+            {timerIsActive ? 'Stop' : 'Start'} challenge
           </button>
         </p>
         <p>
-          {timerIsStarted ? 'Timer is running...' : 'Timer inavtive'}
+          {timerIsActive ? 'Timer is running...' : 'Timer inavtive'}
         </p>
       </section>
     </>
