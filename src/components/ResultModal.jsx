@@ -16,7 +16,7 @@ const ResultModal = forwardRef(({ timeRemaining, targetTime, onReset }, ref) => 
   });
 
   return (
-    <dialog ref={dialog} className="result-modal">
+    <dialog ref={dialog} className="result-modal" onClose={onReset}>
       <h2>{userLost ? 'You lost' : `Your Score: ${score}`}</h2>
       <p>The target time was <strong>{targetTime} seconds</strong>.</p>
       <p>You stopped the timer with <strong>{formattedTime} seconds left</strong>.</p>
